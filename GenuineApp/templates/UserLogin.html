@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - GenuineNews Detection</title>
+  <style>
+    :root {
+      --bg: #f5f8fa;
+      --text: #111827;
+      --muted: #6b7280;
+      --primary: #f59e0b;
+      --primary-hover: #d97706;
+      --card-bg: #ffffff;
+      --border: #e5e7eb;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background-color: var(--bg);
+      background-image: 
+        linear-gradient(to right, #e2e8f0 1px, transparent 1px),
+        linear-gradient(to bottom, #e2e8f0 1px, transparent 1px);
+      background-size: 60px 60px;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    .network-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.6; }
+
+    .main-wrapper {
+      width: 100%;
+      max-width: 1300px;
+      padding: 0 2rem;
+      margin-top: 5vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .header-title { text-align: center; margin-bottom: 3rem; }
+    .header-title h1 { font-size: 3.5rem; font-weight: 800; line-height: 1.1; color: #000; }
+
+    .content-area {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      align-items: stretch;
+      min-height: 600px;
+    }
+
+    .left-nodes { flex: 1.5; position: relative; }
+    .login-card-container { flex: 1; display: flex; justify-content: flex-end; align-items: center; }
+
+    .card {
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05); padding: 3rem 2.5rem; width: 100%;
+      max-width: 420px; text-align: center; height: fit-content; margin-bottom: 2rem;
+    }
+    .card h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 2rem; color: #111827; }
+
+    .alert { padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.9rem; text-align: left; }
+    .alert-error { background: #fee2e2; border: 1px solid #ef4444; color: #b91c1c; }
+    .alert-success { background: #dcfce7; border: 1px solid #22c55e; color: #15803d; }
+
+    .form-group { margin-bottom: 1.5rem; }
+    .form-control {
+      width: 100%; padding: 1rem 0.5rem; border: none; border-bottom: 1px solid #d1d5db;
+      background: transparent; font-size: 1rem; outline: none; transition: border-color 0.2s; text-align: left;
+    }
+    .form-control::placeholder { color: #9ca3af; }
+    .form-control:focus { border-bottom-color: #111827; }
+
+    .password-wrapper { position: relative; width: 100%; }
+
+    .flex-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; font-size: 0.9rem; margin-top: 1rem; }
+    .flex-actions a { color: #111827; text-decoration: none; font-weight: 500; }
+    .flex-actions a:hover { text-decoration: underline; }
+
+    .btn-submit {
+      width: 100%; background: var(--primary); color: #111827; padding: 1rem; border: none;
+      border-radius: 8px; font-size: 1.1rem; font-weight: 700; cursor: pointer; display: flex;
+      align-items: center; justify-content: center; gap: 0.5rem; transition: background 0.2s, transform 0.1s;
+    }
+    .btn-submit:hover { background: var(--primary-hover); }
+    .btn-submit:active { transform: scale(0.98); }
+
+    .footer-link { margin-top: 1.5rem; font-size: 0.9rem; color: var(--muted); }
+    .footer-link a { color: #111827; font-weight: 700; text-decoration: none; }
+    .footer-link a:hover { text-decoration: underline; }
+
+    /* Awesome Nodes Visualization EXACT to Image */
+    .nodes-canvas {
+      position: absolute; width: 700px; height: 600px;
+      top: 0; left: -50px;
+    }
+
+    .article-node {
+      position: absolute;
+      width: 110px;
+      background: white;
+      border-radius: 6px;
+      padding: 6px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 2;
+    }
+
+    .article-node-img {
+      width: 100%;
+      height: 60px;
+      border-radius: 4px;
+      background-size: cover;
+      background-position: center;
+      background-color: #e5e7eb;
+    }
+
+    .article-node-lines {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .article-line { height: 3px; border-radius: 1.5px; width: 100%; }
+    .article-line.start { width: 50%; height: 5px; margin-bottom: 2px;}
+    .article-line.short { width: 70%; }
+    .article-line.xs { width: 40%; }
+
+    .node-label {
+      position: absolute;
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-align: center;
+      width: 150px;
+      left: -20px;
+    }
+    .label-top { top: -28px; }
+    .label-bottom { bottom: -28px; }
+
+    /* Node Colors */
+    .genuine { border: 2px solid #86efac; }
+    .genuine-text { color: #000; }
+    .genuine .article-line { background-color: #dcfce7; }
+    .genuine .article-line.start { background-color: #86efac; }
+
+    .fake { border: 2px solid #fca5a5; }
+    .fake-text { color: #000; }
+    .fake .article-line { background-color: #fee2e2; }
+    .fake .article-line.start { background-color: #fca5a5; }
+
+    .review { border: 2px solid #94a3b8; }
+    .review-text { color: #000; }
+    .review .article-line { background-color: #e2e8f0; }
+    .review .article-line.start { background-color: #cbd5e1; }
+
+    /* Node exact positions (8 nodes) */
+    .n1 { top: 32%; left: 10%; } /* Genuine (horses) */
+    .n2 { top: 15%; left: 35%; } /* Genuine (text block) */
+    .n3 { top: 12%; left: 58%; } /* Genuine (green video) */
+    .n4 { top: 25%; left: 78%; } /* Genuine (lines) */
+    .n5 { top: 40%; left: 55%; } /* Suspicious/Fake (speaker) */
+    .n6 { top: 52%; left: 80%; } /* Suspicious/Fake (person house) */
+    .n7 { top: 60%; left: 25%; } /* Under Review (group) */
+    .n8 { top: 72%; left: 52%; } /* Under Review (lines) */
+
+    /* Lines between nodes */
+    .connection-line { stroke: #cbd5e1; stroke-width: 1.5; fill: none; }
+
+    @media (max-width: 1000px) {
+      .left-nodes { display: none; }
+      .login-card-container { justify-content: center; }
+      .header-title h1 { font-size: 2.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Global background waves/lines -->
+  <svg class="network-bg" viewBox="0 0 1000 800" preserveAspectRatio="none">
+    <path d="M-100,300 Q150,500 500,400 T1100,500" class="connection-line"/>
+    <path d="M-100,400 Q200,600 600,300 T1100,200" class="connection-line"/>
+    <path d="M-100,500 Q300,400 700,500 T1100,600" class="connection-line"/>
+  </svg>
+
+  <div class="main-wrapper">
+    <div class="header-title">
+      <h1>Genuine News Detection<br>using Optimized MSVM</h1>
+    </div>
+
+    <div class="content-area">
+      <div class="left-nodes">
+        <div class="nodes-canvas">
+          <!-- Connectors drawn with SVG -->
+          <svg style="position:absolute; width:100%; height:100%; top:0; left:0; z-index:1;">
+            <line x1="15%" y1="36%" x2="40%" y2="19%" class="connection-line"/>
+            <line x1="40%" y1="19%" x2="63%" y2="16%" class="connection-line"/>
+            <line x1="63%" y1="16%" x2="83%" y2="29%" class="connection-line"/>
+            <line x1="40%" y1="19%" x2="60%" y2="44%" class="connection-line"/>
+            <line x1="15%" y1="36%" x2="60%" y2="44%" class="connection-line"/>
+            <line x1="15%" y1="36%" x2="30%" y2="64%" class="connection-line"/>
+            <line x1="30%" y1="64%" x2="60%" y2="44%" class="connection-line"/>
+            <line x1="60%" y1="44%" x2="85%" y2="56%" class="connection-line"/>
+            <line x1="30%" y1="64%" x2="57%" y2="76%" class="connection-line"/>
+            <line x1="57%" y1="76%" x2="85%" y2="56%" class="connection-line"/>
+            <line x1="83%" y1="29%" x2="60%" y2="44%" class="connection-line"/>
+          </svg>
+
+          <!-- N1 Genuine (Horses) - Image + lines -->
+          <div class="article-node genuine n1">
+            <div class="article-node-img" style="background-image: url('https://picsum.photos/id/28/100/60');"></div>
+            <div class="article-node-lines">
+              <div class="article-line start"></div>
+              <div class="article-line"></div>
+              <div class="article-line"></div>
+              <div class="article-line short"></div>
+            </div>
+            <div class="node-label genuine-text label-bottom">Genuine</div>
+          </div>
+
+          <!-- N2 Genuine (Text block) - Image + lines -->
+          <div class="article-node genuine n2">
+            <div class="node-label genuine-text label-top">Genuine</div>
+            <div class="article-node-img" style="background-image: url('https://picsum.photos/id/119/100/60');"></div>
+            <div class="article-node-lines">
+              <div class="article-line start"></div>
+              <div class="article-line"></div>
+              <div class="article-line"></div>
+              <div class="article-line short"></div>
+            </div>
+          </div>
+
+          <!-- N3 Genuine (Screen/video) - Image + lines -->
+          <div class="article-node genuine n3">
+            <div class="node-label genuine-text label-top">Genuine</div>
+            <div class="article-node-img" style="background-image: url('https://picsum.photos/id/2/100/60');"></div>
+            <div class="article-node-lines">
+              <div class="article-line start"></div>
+              <div class="article-line"></div>
+              <div class="article-line"></div>
+              <div class="article-line short"></div>
+            </div>
+          </div>
+
+          <!-- N4 Genuine - Image + lines -->
+          <div class="article-node genuine n4">
+            <div class="article-node-img" style="background-image: url('https://picsum.photos/id/180/100/60');"></div>
+            <div class="article-node-lines">
+              <div class="article-line start"></div>
+              <div class="article-line"></div>
+              <div class="article-line"></div>
+              <div class="article-line short"></div>
+            </div>
+            <div class="node-label genuine-text label-bottom">Genuine</div>
+          </div>
+
+          <!-- N5 Suspicious/Fake (Speaker) - Image + lines -->
+          <div class="article-node fake n5">
+            <div class="article-node-img" style="background-image: url('https://picsum.photos/id/177/100/60');"></div>
+            <div class="article-node-lines">
+              <div class="article-line start"></div>
+              <div class="article-line"></div>
+              <div class="article-line"></div>
+              <div class="article-line short"></div>
+            </div>
+            <div class="node-label fake-text label-bottom">Suspicious/Fake</div>
+          </div>
+
+          <!-- N6 Suspicious/Fake (Person sitting) - Image + lines -->
+          <div class="article-node fake n6">
+            <div class="article-node-img" style="background-image: url('https://picsum.photos/id/338/100/60');"></div>
+            <div class="article-node-lines">
+              <div class="article-line start"></div>
+              <div class="article-line"></div>
+              <div class="article-line"></div>
+              <div class="article-line short"></div>
+            </div>
+            <div class="node-label fake-text label-bottom">Suspicious/Fake</div>
+          </div>
+
+          <!-- N7 Under Review (group) - Image + lines -->
+          <div class="article-node review n7">
+            <div class="article-node-img" style="background-image: url('https://picsum.photos/id/319/100/60');"></div>
+            <div class="article-node-lines">
+              <div class="article-line start"></div>
+              <div class="article-line"></div>
+              <div class="article-line"></div>
+              <div class="article-line short"></div>
+            </div>
+            <div class="node-label review-text label-bottom">Under Review</div>
+          </div>
+
+          <!-- N8 Under Review - Text only lines -->
+          <div class="article-node review n8">
+            <div class="article-node-lines" style="padding: 10px 0;">
+              <div class="article-line start"></div>
+              <div class="article-line"></div>
+              <div class="article-line"></div>
+              <div class="article-line"></div>
+              <div class="article-line"></div>
+              <div class="article-line"></div>
+              <div class="article-line"></div>
+              <div class="article-line short"></div>
+              <div class="article-line xs"></div>
+            </div>
+            <div class="node-label review-text label-bottom">Under Review</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="login-card-container">
+        <div class="card">
+          <h2>Login</h2>
+          
+          {% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+          {% if success %}<div class="alert alert-success">{{ success }}</div>{% endif %}
+          
+          <form method="post" action="/login/action/">
+            {% csrf_token %}
+            
+            <div class="form-group">
+              <input name="t1" class="form-control" placeholder="Username" required>
+            </div>
+            <div class="form-group">
+              <div class="password-wrapper">
+                <input name="t2" id="loginPassword" type="password" class="form-control" placeholder="Password" required>
+              </div>
+            </div>
+            
+            <div class="flex-actions">
+              <a href="/register/">Register</a>
+              <a href="#">Forgot password?</a>
+            </div>
+            
+            <button type="submit" class="btn-submit">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+              Log In
+            </button>
+          </form>
+          
+          <div class="footer-link">
+            Don't have an Account? <a href="/register/">Register now</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+  </script>
+</body>
+</html>

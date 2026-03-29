@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Batch Results{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-title">Batch Prediction Results</div>
+  <div class="page-sub">{{ total }} news articles analysed</div>
+
+  <div class="stats-grid" style="margin-bottom:1.5rem;">
+    {% regroup rows by label as label_groups %}
+    {% for group in label_groups %}
+    <div class="stat-card">
+      <div class="val" style="color:{% if group.grouper == 'TRUE' %}#27ae60{% elif group.grouper == 'FALSE' %}#e74c3c{% elif group.grouper == 'PARTIALLY TRUE' %}#f39c12{% else %}#9b59b6{% endif %}">
+        {{ group.list|length }}
+      </div>
+      <div class="lbl">{{ group.grouper }}</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <tr><th>#</th><th>News Text</th><th>Prediction</th><th>Confidence</th></tr>
+        {% for row in rows %}
+        <tr>
+          <td style="color:#8892a4;">{{ forloop.counter }}</td>
+          <td>{{ row.text }}</td>
+          <td>
+            <span class="badge badge-{% if row.label == 'TRUE' %}true{% elif row.label == 'FALSE' %}false{% elif row.label == 'PARTIALLY TRUE' %}partial{% else %}mislead{% endif %}">
+              {{ row.icon }} {{ row.label }}
+            </span>
+          </td>
+          <td>{{ row.confidence }}%</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+  <a href="/predict/" class="btn btn-primary">🔍 Predict More</a>
+</div>
+{% endblock %}

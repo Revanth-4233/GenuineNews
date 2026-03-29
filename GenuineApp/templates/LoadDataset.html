@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}Dataset{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-title">Combined Dataset</div>
+  <div class="page-sub">LIAR dataset + FakeNewsNet — unified with 4 class labels</div>
+
+  <div class="stats-grid" style="margin-bottom:1.5rem;">
+    <div class="stat-card">
+      <div class="val">{{ stats.total }}</div>
+      <div class="lbl">Total Records</div>
+    </div>
+    {% for label, count in stats.label_counts.items %}
+    <div class="stat-card">
+      <div class="val" style="color:{% if label == 'TRUE' %}#27ae60{% elif label == 'FALSE' %}#e74c3c{% elif label == 'PARTIALLY TRUE' %}#f39c12{% else %}#9b59b6{% endif %}">
+        {{ count }}
+      </div>
+      <div class="lbl">{{ label }}</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% if stats.sources %}
+  <div class="card">
+    <h3>Data Sources</h3>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Source</th><th>Records</th></tr>
+        {% for src, cnt in stats.sources.items %}
+        <tr><td>{{ src }}</td><td>{{ cnt }}</td></tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="card">
+    <h3>Dataset Preview (first 50 rows)</h3>
+    <div class="table-wrap">
+      <table>
+        <tr><th>#</th><th>News Text</th><th>Label</th><th>Source</th></tr>
+        {% for row in preview %}
+        <tr>
+          <td style="color:#8892a4;">{{ forloop.counter }}</td>
+          <td style="max-width:500px;">{{ row.News|truncatechars:120 }}</td>
+          <td>
+            <span class="badge badge-{% if row.target == 'TRUE' %}true{% elif row.target == 'FALSE' %}false{% elif row.target == 'PARTIALLY TRUE' %}partial{% else %}mislead{% endif %}">
+              {{ row.target }}
+            </span>
+          </td>
+          <td style="color:#8892a4;font-size:.8rem;">{{ row.source }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+
+  <a href="/train-model/" class="btn btn-primary">🧠 Train Model with this Dataset</a>
+</div>
+{% endblock %}

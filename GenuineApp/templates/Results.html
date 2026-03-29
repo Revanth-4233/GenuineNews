@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}Model Results{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-title">Model Performance</div>
+  <div class="page-sub">BERT + Firefly-MSVM vs Baseline metrics</div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="val" style="color:#27ae60;">{{ metrics.accuracy }}%</div>
+      <div class="lbl">Accuracy</div>
+    </div>
+    <div class="stat-card">
+      <div class="val" style="color:#3498db;">{{ metrics.precision }}%</div>
+      <div class="lbl">Precision</div>
+    </div>
+    <div class="stat-card">
+      <div class="val" style="color:#f39c12;">{{ metrics.recall }}%</div>
+      <div class="lbl">Recall</div>
+    </div>
+    <div class="stat-card">
+      <div class="val" style="color:#9b59b6;">{{ metrics.f1 }}%</div>
+      <div class="lbl">F1-Score</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:1.5rem;">
+    <h3>Confusion Matrix &amp; Performance Chart</h3>
+    {% if chart %}
+      <img src="data:image/png;base64,{{ chart }}" style="width:100%;border-radius:8px;margin-top:.5rem;">
+    {% else %}
+      <div class="alert alert-info">Chart unavailable</div>
+    {% endif %}
+  </div>
+
+  {% if class_rows %}
+  <div class="card">
+    <h3>Per-Class Performance</h3>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Class</th><th>Precision</th><th>Recall</th><th>F1-Score</th><th>Support</th></tr>
+        {% for row in class_rows %}
+        <tr>
+          <td>
+            <span class="badge badge-{% if row.label == 'TRUE' %}true{% elif row.label == 'FALSE' %}false{% elif row.label == 'PARTIALLY TRUE' %}partial{% else %}mislead{% endif %}">
+              {{ row.label }}
+            </span>
+          </td>
+          <td>{{ row.precision }}%</td>
+          <td>{{ row.recall }}%</td>
+          <td>{{ row.f1 }}%</td>
+          <td>{{ row.support }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  <a href="/predict/" class="btn btn-primary" style="margin-top:1rem;">🔍 Start Predicting</a>
+</div>
+{% endblock %}

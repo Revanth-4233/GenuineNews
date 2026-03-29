@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenuineNews - System Diagrams</title>
+    <!-- Load Mermaid.js for rendering diagrams -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose',
+            flowchart: { useMaxWidth: false, htmlLabels: true }
+        });
+    </script>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --bg: #f8f9fa;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 40px;
+            color: #333;
+            line-height: 1.6;
+            background: #fdfdfd;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid var(--secondary);
+        }
+        h1 {
+            color: var(--primary);
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2em;
+        }
+        h2 {
+            color: var(--secondary);
+            margin-top: 50px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            page-break-after: avoid;
+        }
+        .diagram-container {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 40px;
+            margin: 30px 0;
+            text-align: center;
+            width: fit-content;
+            min-width: 100%;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            page-break-inside: avoid;
+        }
+        .description {
+            font-size: 1em;
+            color: #555;
+            margin-bottom: 15px;
+        }
+        .instruction {
+            background: #e8f4fd;
+            border-left: 5px solid #3498db;
+            padding: 15px;
+            margin-bottom: 30px;
+            border-radius: 0 5px 5px 0;
+            font-weight: 500;
+        }
+        
+        /* Print Styles for PDF Generation */
+        @media print {
+            body { max-width: 100%; padding: 0; background: white; }
+            .instruction { display: none; }
+            .diagram-container { 
+                border: 1px solid #ccc; 
+                box-shadow: none; 
+                background: white; 
+                page-break-inside: avoid;
+            }
+            h2 { page-break-before: always; }
+            .header { page-break-before: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="instruction">
+        🖨️ <strong>How to save this as a PDF:</strong><br>
+        Press <code>Ctrl + P</code> (or <code>Cmd + P</code> on Mac) to open the print dialog. Set the Destination to <strong>"Save as PDF"</strong>, ensure "Background graphics" is ticked, and click Save.
+    </div>
+
+    <div class="header">
+        <h1>GenuineNews Predictor</h1>
+        <div class="subtitle">Complete Technical Diagrams & Architecture</div>
+    </div>
+
+    <!-- 1. Use Case Diagram -->
+    <h2>1. Use Case Diagram</h2>
+    <div class="description">Illustrates the primary actors (User and Admin) and their interactions with the GenuineNews platform components.</div>
+    <div class="diagram-container">
+        <div class="mermaid">
+flowchart LR
+    User([Registered User])
+    Admin([System Administrator])
+
+    subgraph GenuineNews Platform
+        UC1(Register / Login)
+        UC2(View Dashboard & History)
+        UC3(Load & Preprocess Dataset)
+        UC4(Train MSVM Model)
+        UC5(Predict via Text)
+        UC6(Predict via URL Scraping)
+        UC7(Predict via CSV Batch)
+        UC8(View Prediction & Web Evidence)
+    end
+
+    User --> UC1
+    User --> UC2
+    User --> UC5
+    User --> UC6
+    User --> UC7
+    User --> UC8
+
+    Admin --> UC3
+    Admin --> UC4
+    Admin --> UC2
+        </div>
+    </div>
+
+    <!-- 2. Class Diagram -->
+    <h2>2. Class Diagram</h2>
+    <div class="description">Defines the system's core classes, including the Database Models, ML Engine, and Web Views.</div>
+    <div class="diagram-container">
+        <div class="mermaid">
+classDiagram
+    class PredictionHistory {
+        +Integer id
+        +String username
+        +Text news_text
+        +URL source_url
+        +String prediction
+        +Float confidence
+        +DateTime predicted_at
+        +save()
+    }
+
+    class GenuineNewsDetector {
+        +SVM svm_model
+        +TfidfVectorizer vectorizer
+        +Dict metrics
+        +Boolean is_trained
+        +load_and_preprocess(filepath)
+        +train(dataset)
+        +predict_one(text) Dictionary
+        +predict_batch(texts) List
+        -_lazy_load()
+    }
+
+    class WebEvidenceGatherer {
+        +search_google(query)
+        +search_newsapi(query)
+        +search_all_evidence(text) Tuple
+    }
+
+    class Views {
+        +RegisterAction(request)
+        +UserLoginAction(request)
+        +PredictURLAction(request)
+        +Results(request)
+        +Dashboard(request)
+    }
+
+    Views --> GenuineNewsDetector : Instantiates / Uses
+    Views --> WebEvidenceGatherer : Calls for web validation
+    Views --> PredictionHistory : Creates history records
+        </div>
+    </div>
+
+    <!-- 3. Sequence Diagram -->
+    <h2>3. Sequence Diagram (URL Prediction Flow)</h2>
+    <div class="description">Shows the step-by-step sequence of events when a user submits a news URL for prediction.</div>
+    <div class="diagram-container">
+        <div class="mermaid">
+sequenceDiagram
+    actor User
+    participant Browser
+    participant Django as Django Views
+    participant Scraper as URL Scraper
+    participant SVM as MSVM Engine
+    participant APIs as Web APIs (Google/NewsAPI)
+    participant DB as SQLite DB
+
+    User->>Browser: Enters News URL and clicks Predict
+    Browser->>Django: POST /predict/url/
+    Django->>Scraper: scrape_url(URL)
+    Scraper-->>Django: Returns extracted text & title
+    Django->>SVM: predict_one(text)
+    SVM-->>Django: Returns {Label, Confidence}
+    Django->>APIs: search_all_evidence(text)
+    APIs-->>Django: Returns web sources & trusted verdict
+    Django->>DB: create(PredictionHistory)
+    DB-->>Django: Saved confirmation
+    Django-->>Browser: Render Result.html with findings
+    Browser-->>User: Displays AI Prediction & Web Evidence
+        </div>
+    </div>
+
+    <!-- 4. Data Flow Diagram -->
+    <h2>4. Data Flow Diagram (Level 1)</h2>
+    <div class="description">Maps how data moves through the system from the initial user input to the final database storage.</div>
+    <div class="diagram-container">
+        <div class="mermaid">
+flowchart TD
+    ext1([User Input: Text/URL/File])
+    ext2([External Search APIs])
+    ds1[(SQLite Database)]
+    ds2[(detector.pkl Model Layer)]
+    ds3[(clean_news_dataset.csv)]
+
+    proc1((1. Authenticate<br>User))
+    proc2((2. Scrape URL &<br>Extract Text))
+    proc3((3. NLP Preprocessing<br>& Vectorization))
+    proc4((4. MSVM AI<br>Prediction))
+    proc5((5. Evidence<br>Gathering))
+    proc6((6. Format & Save<br>Results))
+
+    ext1 --> proc1
+    proc1 --> proc2
+    proc2 --> proc3
+    ds3 --> proc3
+    proc3 --> proc4
+    ds2 <--> proc4
+    proc2 --> proc5
+    ext2 <--> proc5
+    proc4 --> proc6
+    proc5 --> proc6
+    proc6 --> ds1
+    proc6 --> ext1
+        </div>
+    </div>
+
+    <!-- 5. Flow Chart -->
+    <h2>5. Flow Chart (Prediction Logic)</h2>
+    <div class="description">Visualizes the internal decision-making process inside the prediction algorithm.</div>
+    <div class="diagram-container">
+        <div class="mermaid">
+flowchart TD
+    Start([Start Prediction]) --> Validate{Is Input Valid?}
+    Validate -- No --> Error([Show Error Message])
+    Validate -- Yes (URL) --> Scrape[Scrape Website HTML Content]
+    Validate -- Yes (Text) --> Prepare[Prepare Text]
+    
+    Scrape --> CheckTrained
+    Prepare --> CheckTrained
+    
+    CheckTrained{Is Model Trained?}
+    CheckTrained -- No --> Redirect[Redirect user to Train Model]
+    CheckTrained -- Yes --> Vectorize[NLTK + TF-IDF Vectorization]
+    
+    Vectorize --> Predict[Apply Optimized MSVM Model]
+    Predict --> Gather[Gather Web Evidence from Web APIs]
+    Gather --> Compare{Match Evidence against Prediction?}
+    
+    Compare -- Matches --> TagReal[Tag Output as Confirmed TRUE]
+    Compare -- Contradicts --> TagFake[Tag Output as Contradicted FALSE]
+    Compare -- No Evidence Found --> TagUnverified[Tag Output as Unverified]
+    
+    TagReal --> Save[Save to Prediction History DB]
+    TagFake --> Save
+    TagUnverified --> Save
+    
+    Save --> Display([Render Result.html Dashboard])
+        </div>
+    </div>
+
+    <!-- 6. Architecture Diagram -->
+    <h2>6. System Architecture Diagram</h2>
+    <div class="description">A high-level overview of the complete cloud architecture and technology stack dependencies.</div>
+    <div class="diagram-container">
+        <div class="mermaid">
+flowchart TB
+    subgraph Client [Client Side]
+        Browser[Web Browser / User Interface]
+        HTML[Responsive HTML5 / TailwindCSS / JS]
+        Browser --- HTML
+    end
+
+    subgraph Server [Render / Cloud Server Layer]
+        Gunicorn[Gunicorn WSGI Server]
+        Django[Django Backend Framework]
+        
+        subgraph Core Logic
+            Views[Django Views & Routing]
+            Scraper[BeautifulSoup4 Web Scraper]
+            Evidence[Web Evidence Integrator]
+        end
+        
+        subgraph Machine Learning Pipeline
+            NLP[NLTK Preprocessing]
+            TFIDF[TF-IDF Vectorizer]
+            MSVM[Optimized MSVM Decision Model]
+        end
+
+        Gunicorn <--> Django
+        Django <--> Views
+        Views <--> Scraper
+        Views <--> Evidence
+        Views <--> NLP
+        NLP --> TFIDF
+        TFIDF --> MSVM
+    end
+
+    subgraph Data [Storage Layer]
+        SQLite[(SQLite Database)]
+        PKL[(detector.pkl Memory Object)]
+    end
+
+    subgraph External [External Web Services]
+        Google[Google Custom Search API]
+        NewsAPI[NewsAPI Global Service]
+        Internet[News Websites / Articles]
+    end
+
+    Client <==>|HTTP / Web Requests| Server
+    Views <==> SQLite
+    MSVM <==> PKL
+    Evidence <==>|JSON Requests| Google
+    Evidence <==>|JSON Requests| NewsAPI
+    Scraper <==>|Scraping Parsed HTML| Internet
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GenuineNews - Complete Project Guide</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Fira+Code&display=swap');
+  :root { --bg:#f8fafc; --card:#fff; --border:#e2e8f0; --accent:#2563eb; --text:#0f172a; --muted:#64748b; --green:#16a34a; --red:#dc2626; --orange:#d97706; --purple:#7c3aed; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(--text); line-height:1.7; }
+  .container { max-width:900px; margin:0 auto; padding:2rem; }
+  h1 { font-size:2.2rem; font-weight:800; text-align:center; margin:2rem 0 0.5rem; color:var(--accent); }
+  .subtitle { text-align:center; color:var(--muted); font-size:1rem; margin-bottom:2rem; }
+  h2 { font-size:1.5rem; font-weight:700; color:var(--accent); margin:2.5rem 0 1rem; border-bottom:2px solid var(--accent); padding-bottom:0.4rem; }
+  h3 { font-size:1.15rem; font-weight:700; color:var(--text); margin:1.5rem 0 0.5rem; }
+  h4 { font-size:1rem; font-weight:600; color:var(--purple); margin:1rem 0 0.3rem; }
+  p, li { font-size:0.95rem; color:#334155; }
+  ul, ol { padding-left:1.5rem; margin-bottom:1rem; }
+  li { margin-bottom:0.4rem; }
+  .card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1.5rem; margin-bottom:1.2rem; box-shadow:0 2px 8px rgba(0,0,0,0.04); }
+  .file-table { width:100%; border-collapse:collapse; font-size:0.88rem; margin:0.5rem 0; }
+  .file-table th { background:#f1f5f9; padding:0.6rem 0.8rem; text-align:left; font-weight:600; color:var(--muted); border-bottom:2px solid var(--border); }
+  .file-table td { padding:0.6rem 0.8rem; border-bottom:1px solid var(--border); vertical-align:top; }
+  .file-table tr:last-child td { border-bottom:none; }
+  .badge { display:inline-block; padding:0.15rem 0.5rem; border-radius:12px; font-size:0.75rem; font-weight:600; }
+  .badge-py { background:#e0f2fe; color:#0369a1; }
+  .badge-html { background:#fef3c7; color:#92400e; }
+  .badge-cfg { background:#f3e8ff; color:#6b21a8; }
+  .badge-data { background:#dcfce7; color:#166534; }
+  code { font-family:'Fira Code',monospace; background:#f1f5f9; padding:0.1rem 0.4rem; border-radius:4px; font-size:0.85rem; }
+  .highlight { background:linear-gradient(135deg,#eff6ff,#f0fdf4); border-left:4px solid var(--accent); padding:1rem 1.2rem; border-radius:0 8px 8px 0; margin:1rem 0; }
+  .flow-box { display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center; justify-content:center; margin:1rem 0; }
+  .flow-step { background:var(--accent); color:#fff; padding:0.4rem 1rem; border-radius:20px; font-size:0.82rem; font-weight:600; }
+  .flow-arrow { color:var(--muted); font-weight:700; }
+  .section-icon { font-size:1.3rem; margin-right:0.3rem; }
+  .toc { columns:2; column-gap:2rem; }
+  .toc li { font-size:0.9rem; }
+  .db-compare th, .db-compare td { padding:0.5rem 0.8rem; font-size:0.85rem; }
+  .db-compare { width:100%; border-collapse:collapse; margin:0.5rem 0; }
+  .db-compare th { background:#f1f5f9; border-bottom:2px solid var(--border); text-align:left; }
+  .db-compare td { border-bottom:1px solid var(--border); }
+  @media print {
+    body { font-size:11pt; }
+    .card { break-inside:avoid; box-shadow:none; border:1px solid #ddd; }
+    h2 { break-after:avoid; }
+    .container { max-width:100%; padding:1rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>📰 GenuineNews Detection System</h1>
+<p class="subtitle">Complete Project Guide — Final Year B.Tech Project<br>
+<strong>Technology:</strong> Django + BERT + Firefly-MSVM + SQLite<br>
+<strong>Project ID:</strong> 4233 &nbsp;|&nbsp; <strong>Date:</strong> March 2026</p>
+
+<!-- ═══════════════════════════════════════════════ -->
+<h2><span class="section-icon">📋</span> Table of Contents</h2>
+<div class="card">
+<ol class="toc">
+  <li>Project Overview &amp; Architecture</li>
+  <li>Technology Stack</li>
+  <li>Complete File Structure</li>
+  <li>Detailed File Guide</li>
+  <li>Database Design — Why SQLite?</li>
+  <li>How User Details Are Stored</li>
+  <li>ML Pipeline — BERT + Firefly-MSVM</li>
+  <li>Evidence Verification System</li>
+  <li>URL Routing &amp; Flow</li>
+  <li>Deployment Configuration</li>
+  <li>How to Run the Project</li>
+</ol>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<h2><span class="section-icon">🏗️</span> 1. Project Overview &amp; Architecture</h2>
+<div class="card">
+  <p><strong>GenuineNews</strong> is a web-based AI system that detects whether a news article is <strong>TRUE, FALSE, PARTIALLY TRUE, or MISLEADING</strong> using a combination of:</p>
+  <ul>
+    <li><strong>BERT Sentence Embeddings</strong> — converts text into 384-dimensional vectors</li>
+    <li><strong>Firefly Algorithm</strong> — bio-inspired feature selection to pick the best features</li>
+    <li><strong>Multi-class SVM (MSVM)</strong> — Support Vector Machine with One-vs-Rest strategy</li>
+    <li><strong>Web Evidence Search</strong> — cross-verifies with Google (SerpAPI), NewsAPI, and GDELT</li>
+  </ul>
+  <div class="flow-box">
+    <span class="flow-step">User Input</span><span class="flow-arrow">→</span>
+    <span class="flow-step">Text Cleaning</span><span class="flow-arrow">→</span>
+    <span class="flow-step">BERT Embed</span><span class="flow-arrow">→</span>
+    <span class="flow-step">PCA Reduce</span><span class="flow-arrow">→</span>
+    <span class="flow-step">Firefly Select</span><span class="flow-arrow">→</span>
+    <span class="flow-step">SVM Predict</span><span class="flow-arrow">→</span>
+    <span class="flow-step">Evidence Verify</span><span class="flow-arrow">→</span>
+    <span class="flow-step">Final Verdict</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<h2><span class="section-icon">⚙️</span> 2. Technology Stack</h2>
+<div class="card">
+  <table class="file-table">
+    <tr><th>Layer</th><th>Technology</th><th>Why This Choice</th></tr>
+    <tr><td>Backend Framework</td><td>Django 4.2 (Python)</td><td>Most popular Python web framework, built-in admin, ORM, auth, template engine — ideal for ML projects</td></tr>
+    <tr><td>Database</td><td>SQLite 3</td><td>Zero-config, file-based, perfect for academic projects (see Section 5 for full explanation)</td></tr>
+    <tr><td>ML — Embeddings</td><td>sentence-transformers (BERT)</td><td>State-of-the-art NLP — understands context, slang, informal text</td></tr>
+    <tr><td>ML — Feature Selection</td><td>Firefly Algorithm</td><td>Bio-inspired optimization — selects only the most relevant features from 384 BERT dimensions</td></tr>
+    <tr><td>ML — Classifier</td><td>scikit-learn SVM (SVC)</td><td>Excellent for multi-class classification, works well with selected features</td></tr>
+    <tr><td>Frontend</td><td>HTML + CSS + Django Templates</td><td>Server-side rendering — no need for separate React/Angular app</td></tr>
+    <tr><td>Evidence APIs</td><td>SerpAPI, NewsAPI, GDELT</td><td>Cross-verify claims from 3 independent sources simultaneously</td></tr>
+    <tr><td>Deployment</td><td>Render (Gunicorn + WhiteNoise)</td><td>Free tier hosting for Django apps, easy git-based deployment</td></tr>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<h2><span class="section-icon">📁</span> 3. Complete File Structure</h2>
+<div class="card">
+<pre style="font-family:'Fira Code',monospace;font-size:0.82rem;line-height:1.6;background:#f8fafc;padding:1rem;border-radius:8px;overflow-x:auto;">
+GenuineNews/
+├── Genuine/                    ← Django Project Config
+│   ├── __init__.py
+│   ├── settings.py             ← All project settings
+│   ├── urls.py                 ← URL routing (master)
+│   └── wsgi.py                 ← WSGI entry point
+├── GenuineApp/                 ← Main Application
+│   ├── __init__.py
+│   ├── admin.py                ← Django admin registration
+│   ├── apps.py                 ← App configuration
+│   ├── models.py               ← Database models
+│   ├── views.py                ← All view functions (968 lines)
+│   ├── ml_engine.py            ← ML pipeline (BERT+Firefly+SVM)
+│   ├── dataset_loader.py       ← Dataset loading &amp; balancing
+│   ├── urls.py                 ← App URL routing
+│   ├── migrations/             ← Database migrations
+│   ├── static/                 ← Static files (CSS/JS/images)
+│   └── templates/              ← HTML templates
+│       ├── base.html           ← Base layout (navbar, styles)
+│       ├── index.html          ← Landing/home page
+│       ├── Register.html       ← Registration page
+│       ├── UserLogin.html      ← Login page
+│       ├── Dashboard.html      ← User dashboard
+│       ├── LoadDataset.html    ← Dataset viewer
+│       ├── Training.html       ← Model training page
+│       ├── Predict.html        ← Prediction input (text/URL/CSV)
+│       ├── Result.html         ← Single prediction result
+│       ├── Results.html        ← Model performance metrics
+│       └── BatchResult.html    ← Batch CSV prediction results
+├── Dataset/                    ← Training datasets (9 CSV files)
+├── model/                      ← Trained model (detector.pkl)
+├── db.sqlite3                  ← SQLite database file
+├── manage.py                   ← Django management script
+├── requirements.txt            ← Python dependencies
+├── Procfile                    ← Render deployment config
+├── build.sh                    ← Render build script
+├── runtime.txt                 ← Python version for Render
+├── run_windows.bat             ← Windows startup script
+├── run_linux.sh                ← Linux startup script
+└── .gitignore                  ← Git ignore rules
+</pre>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<h2><span class="section-icon">📄</span> 4. Detailed File Guide</h2>
+
+<h3>4.1 — Django Project Config (<code>Genuine/</code>)</h3>
+<div class="card">
+  <table class="file-table">
+    <tr><th>File</th><th>Purpose</th><th>Key Details</th></tr>
+    <tr><td><span class="badge badge-py">PY</span> <code>settings.py</code></td>
+        <td>Central configuration file</td>
+        <td>Database config (SQLite), installed apps, middleware (WhiteNoise for static files), template directories, API keys (Google, NewsAPI), CSRF settings for Render deployment</td></tr>
+    <tr><td><span class="badge badge-py">PY</span> <code>urls.py</code></td>
+        <td>Master URL routing</td>
+        <td>Maps all 14 URL paths to view functions — register, login, dashboard, dataset, train, predict (text/url/file), results, logout</td></tr>
+    <tr><td><span class="badge badge-py">PY</span> <code>wsgi.py</code></td>
+        <td>WSGI entry point</td>
+        <td>Used by Gunicorn in production to serve the Django application. WSGI = Web Server Gateway Interface</td></tr>
+    <tr><td><span class="badge badge-py">PY</span> <code>__init__.py</code></td>
+        <td>Package marker</td>
+        <td>Makes <code>Genuine/</code> a Python package so Django can import it</td></tr>
+  </table>
+</div>
+
+<h3>4.2 — Main Application (<code>GenuineApp/</code>)</h3>
+<div class="card">
+  <table class="file-table">
+    <tr><th>File</th><th>Purpose</th><th>Key Details</th></tr>
+    <tr><td><span class="badge badge-py">PY</span> <code>models.py</code></td>
+        <td>Database schema</td>
+        <td><strong>UserProfile</strong> — stores username, hashed password (SHA-256), email, contact, address, created_at<br>
+            <strong>PredictionHistory</strong> — stores username, news_text, source_url, prediction label, confidence, timestamp</td></tr>
+    <tr><td><span class="badge badge-py">PY</span> <code>views.py</code></td>
+        <td>All business logic (980 lines)</td>
+        <td>Contains: Registration, Login, Logout, Dashboard, Dataset loading, Model training, Prediction (text/URL/CSV), Results display, Evidence search (SerpAPI + NewsAPI + GDELT), Claim verification logic</td></tr>
+    <tr><td><span class="badge badge-py">PY</span> <code>ml_engine.py</code></td>
+        <td>ML pipeline (516 lines)</td>
+        <td>Contains: <strong>BERTExtractor</strong> (sentence embeddings), <strong>FireflyMSVM</strong> (feature selection), <strong>GenuineNewsDetector</strong> (full pipeline), URL scraper, text cleaning. Lazy-loads model to save memory</td></tr>
+    <tr><td><span class="badge badge-py">PY</span> <code>dataset_loader.py</code></td>
+        <td>Dataset handling (248 lines)</td>
+        <td>Loads 9 CSV files, auto-detects column formats, maps labels to 4 classes, balances classes via oversampling/undersampling to 5000 per class</td></tr>
+    <tr><td><span class="badge badge-py">PY</span> <code>admin.py</code></td>
+        <td>Admin panel config</td>
+        <td>Registers UserProfile and PredictionHistory in Django admin panel at <code>/admin/</code></td></tr>
+    <tr><td><span class="badge badge-py">PY</span> <code>apps.py</code></td>
+        <td>App configuration</td>
+        <td>Defines app name as <code>GenuineApp</code> with BigAutoField primary keys</td></tr>
+  </table>
+</div>
+
+<h3>4.3 — HTML Templates</h3>
+<div class="card">
+  <table class="file-table">
+    <tr><th>Template</th><th>Purpose</th><th>Key Features</th></tr>
+    <tr><td><span class="badge badge-html">HTML</span> <code>base.html</code></td><td>Master layout</td><td>Navbar, global styles, footer, tab switching JS. All other pages inherit from this</td></tr>
+    <tr><td><span class="badge badge-html">HTML</span> <code>Register.html</code></td><td>User registration</td><td>Standalone page with animated node visualization, username/password/confirm-password/email fields, client-side password matching</td></tr>
+    <tr><td><span class="badge badge-html">HTML</span> <code>UserLogin.html</code></td><td>User login</td><td>Standalone page matching Register design, same node visualization</td></tr>
+    <tr><td><span class="badge badge-html">HTML</span> <code>Dashboard.html</code></td><td>Main dashboard</td><td>Model status (READY/UNTRAINED), accuracy metrics, quick links to all features, recent prediction history table</td></tr>
+    <tr><td><span class="badge badge-html">HTML</span> <code>Predict.html</code></td><td>Prediction input</td><td>3 tabs: Text input, URL scraping, CSV file upload. Disables buttons if model untrained</td></tr>
+    <tr><td><span class="badge badge-html">HTML</span> <code>Result.html</code></td><td>Prediction result</td><td>AI prediction with confidence bar, evidence verdict, probability breakdown, web evidence cards with trusted/untrusted badges, manual verification links</td></tr>
+    <tr><td><span class="badge badge-html">HTML</span> <code>Results.html</code></td><td>Model metrics</td><td>Accuracy/Precision/Recall/F1 stats, confusion matrix chart, per-class performance table</td></tr>
+    <tr><td><span class="badge badge-html">HTML</span> <code>Training.html</code></td><td>Model training</td><td>6-step pipeline display, AJAX polling for live training log, auto-redirect to results on completion</td></tr>
+    <tr><td><span class="badge badge-html">HTML</span> <code>LoadDataset.html</code></td><td>Dataset viewer</td><td>Total records, per-class counts, data source breakdown, preview of first 50 rows</td></tr>
+    <tr><td><span class="badge badge-html">HTML</span> <code>BatchResult.html</code></td><td>Batch CSV results</td><td>Summary by class, full table with prediction and confidence for each row</td></tr>
+  </table>
+</div>
+
+<h3>4.4 — Configuration &amp; Deployment Files</h3>
+<div class="card">
+  <table class="file-table">
+    <tr><th>File</th><th>Purpose</th></tr>
+    <tr><td><span class="badge badge-cfg">CFG</span> <code>manage.py</code></td><td>Django CLI — runs server, migrations, admin commands (<code>python manage.py runserver</code>)</td></tr>
+    <tr><td><span class="badge badge-cfg">CFG</span> <code>requirements.txt</code></td><td>Lists all 17 Python packages needed: django, numpy, pandas, scikit-learn, matplotlib, seaborn, beautifulsoup4, requests, nltk, sentence-transformers, torch, transformers, pymysql, Pillow, gunicorn, whitenoise, gdown</td></tr>
+    <tr><td><span class="badge badge-cfg">CFG</span> <code>Procfile</code></td><td>Render deployment — tells Render to run <code>gunicorn Genuine.wsgi</code></td></tr>
+    <tr><td><span class="badge badge-cfg">CFG</span> <code>build.sh</code></td><td>Render build script — installs dependencies, downloads model from Google Drive, runs collectstatic and migrate</td></tr>
+    <tr><td><span class="badge badge-cfg">CFG</span> <code>runtime.txt</code></td><td>Specifies Python version for Render</td></tr>
+    <tr><td><span class="badge badge-cfg">CFG</span> <code>run_windows.bat</code></td><td>One-click Windows startup: installs deps → runs migrations → starts server</td></tr>
+    <tr><td><span class="badge badge-cfg">CFG</span> <code>.gitignore</code></td><td>Excludes venv, __pycache__, .env, staticfiles, media from Git</td></tr>
+  </table>
+</div>
+
+<h3>4.5 — Data Files</h3>
+<div class="card">
+  <table class="file-table">
+    <tr><th>File/Folder</th><th>Purpose</th></tr>
+    <tr><td><span class="badge badge-data">DATA</span> <code>Dataset/</code></td><td>9 CSV files (~430MB total): Fake.csv, True.csv, Fake1.csv, True1.csv, IFND.csv, indian_news_dataset.csv, DataSet_Misinfo_FAKE.csv, DataSet_Misinfo_TRUE.csv, EXTRA_RussianPropagandaSubset.csv</td></tr>
+    <tr><td><span class="badge badge-data">DATA</span> <code>model/detector.pkl</code></td><td>Pre-trained model file (~90MB) — contains BERT extractor, scaler, PCA, Firefly features, SVM model, label encoder, metrics</td></tr>
+    <tr><td><span class="badge badge-data">DATA</span> <code>db.sqlite3</code></td><td>SQLite database — stores user profiles and prediction history</td></tr>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<h2><span class="section-icon">🗄️</span> 5. Database Design — Why SQLite?</h2>
+<div class="card">
+  <h4>Why SQLite over MySQL / PostgreSQL?</h4>
+  <table class="db-compare">
+    <tr><th>Feature</th><th>SQLite ✅ (Our Choice)</th><th>MySQL / PostgreSQL</th></tr>
+    <tr><td>Setup Required</td><td><strong>Zero setup</strong> — just a single file <code>db.sqlite3</code></td><td>Requires installing a database server, creating databases, configuring users</td></tr>
+    <tr><td>Portability</td><td><strong>Copy one file</strong> to move entire database</td><td>Requires export/import or database migration tools</td></tr>
+    <tr><td>Dependencies</td><td><strong>Built into Python</strong> — no extra installation</td><td>Needs <code>mysqlclient</code> or <code>psycopg2</code> drivers</td></tr>
+    <tr><td>Performance</td><td>Excellent for &lt;100 concurrent users</td><td>Better for high-traffic production apps</td></tr>
+    <tr><td>Academic Projects</td><td><strong>Perfect</strong> — self-contained, easy to demo</td><td>Over-engineered for 1-5 users</td></tr>
+    <tr><td>Cost</td><td><strong>Free, no server needed</strong></td><td>Requires hosting or cloud database</td></tr>
+    <tr><td>Deployment</td><td>Works instantly on Render/Heroku</td><td>Needs separate database service ($$$)</td></tr>
+  </table>
+  <div class="highlight">
+    <strong>Bottom line:</strong> For a final year project with a few users, SQLite is the <em>best</em> choice — zero config, zero cost, portable, and Django's default. MySQL/PostgreSQL would add unnecessary complexity.
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<h2><span class="section-icon">👤</span> 6. How User Details Are Stored</h2>
+<div class="card">
+  <h4>Database Model: <code>UserProfile</code></h4>
+  <table class="file-table">
+    <tr><th>Field</th><th>Type</th><th>Purpose</th></tr>
+    <tr><td><code>id</code></td><td>BigAutoField (auto)</td><td>Auto-incrementing primary key</td></tr>
+    <tr><td><code>username</code></td><td>CharField(100, unique)</td><td>Login identifier — must be unique</td></tr>
+    <tr><td><code>password</code></td><td>CharField(200)</td><td>SHA-256 hashed password (never stored as plain text)</td></tr>
+    <tr><td><code>email</code></td><td>EmailField</td><td>User's email address</td></tr>
+    <tr><td><code>contact</code></td><td>CharField(15)</td><td>Contact number (optional)</td></tr>
+    <tr><td><code>address</code></td><td>TextField</td><td>Address (optional)</td></tr>
+    <tr><td><code>created_at</code></td><td>DateTimeField(auto_now_add)</td><td>Registration timestamp — auto-set</td></tr>
+  </table>
+
+  <h4>Registration Flow (Step by Step)</h4>
+  <ol>
+    <li>User fills in username, password, confirm password, email on <code>Register.html</code></li>
+    <li>Client-side JavaScript validates passwords match before form submission</li>
+    <li>Server-side <code>RegisterAction()</code> view receives the POST data</li>
+    <li>Server checks: username not empty, passwords match, username not already taken</li>
+    <li>Password is hashed using <strong>SHA-256</strong>: <code>hashlib.sha256(password.encode()).hexdigest()</code></li>
+    <li>New <code>UserProfile</code> record is created in SQLite database</li>
+    <li>User is redirected to login page with success message</li>
+  </ol>
+
+  <h4>Login Flow</h4>
+  <ol>
+    <li>User enters username and password on <code>UserLogin.html</code></li>
+    <li><code>UserLoginAction()</code> hashes the entered password with SHA-256</li>
+    <li>Queries database: <code>UserProfile.objects.get(username=username, password=hashed)</code></li>
+    <li>If match found → stores username in Django session → redirects to Dashboard</li>
+    <li>If no match → shows "Invalid username or password" error</li>
+  </ol>
+
+  <h4>Session Management</h4>
+  <p>Django's built-in session framework (<code>django.contrib.sessions</code>) stores sessions in the database. The session engine is configured as <code>django.contrib.sessions.backends.db</code>, meaning session data is stored in a <code>django_session</code> table in SQLite.</p>
+
+  <h4>Database Model: <code>PredictionHistory</code></h4>
+  <table class="file-table">
+    <tr><th>Field</th><th>Type</th><th>Purpose</th></tr>
+    <tr><td><code>username</code></td><td>CharField(100)</td><td>Links prediction to user</td></tr>
+    <tr><td><code>news_text</code></td><td>TextField</td><td>The news text that was predicted (truncated to 500 chars)</td></tr>
+    <tr><td><code>source_url</code></td><td>URLField(optional)</td><td>URL if prediction was from URL scraping</td></tr>
+    <tr><td><code>prediction</code></td><td>CharField(50)</td><td>TRUE / FALSE / PARTIALLY TRUE / MISLEADING / UNCERTAIN</td></tr>
+    <tr><td><code>confidence</code></td><td>FloatField</td><td>AI confidence percentage (0-100)</td></tr>
+    <tr><td><code>predicted_at</code></td><td>DateTimeField(auto)</td><td>When the prediction was made</td></tr>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<h2><span class="section-icon">🤖</span> 7. ML Pipeline — BERT + Firefly-MSVM</h2>
+<div class="card">
+  <h4>Step 1: Text Cleaning (<code>clean_social_media_text()</code>)</h4>
+  <p>Removes URLs, @mentions, RT markers, special characters. Lemmatizes words using NLTK's WordNetLemmatizer. Removes stopwords and short words.</p>
+
+  <h4>Step 2: BERT Embeddings (<code>BERTExtractor</code>)</h4>
+  <p>Uses <code>all-MiniLM-L6-v2</code> model from sentence-transformers. Converts each text into a 384-dimensional vector that captures semantic meaning. Falls back to TF-IDF if sentence-transformers is unavailable.</p>
+
+  <h4>Step 3: PCA Dimensionality Reduction</h4>
+  <p>Reduces 384 features to ~100 components keeping 95% variance. Uses <code>sklearn.decomposition.PCA</code> with full SVD solver.</p>
+
+  <h4>Step 4: Firefly Feature Selection (<code>FireflyMSVM</code>)</h4>
+  <p>Bio-inspired algorithm with 12 fireflies and 5 iterations. Each firefly represents a binary feature mask. Fitness = cross-validated accuracy of SVM on selected features. Fireflies move toward brighter (better) solutions. Final result: only the most discriminative features are kept.</p>
+
+  <h4>Step 5: Multi-class SVM Training</h4>
+  <p>SVC with RBF kernel, C=200, balanced class weights, OvR strategy. 80/20 train-test split with stratification. Outputs: accuracy, precision, recall, F1-score, confusion matrix.</p>
+
+  <h4>Step 6: Confidence Threshold</h4>
+  <p>If prediction confidence &lt; 50% → returns <strong>UNCERTAIN</strong> instead of potentially wrong label. This prevents unreliable predictions from being shown as definitive.</p>
+
+  <h4>Model Persistence</h4>
+  <p>Entire pipeline (BERT extractor, scaler, PCA, firefly, SVM, label encoder, metrics) is saved as <code>model/detector.pkl</code> using Python's pickle. Lazy-loads into RAM only when first prediction is needed — saves memory on free Render tier.</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<h2><span class="section-icon">🔍</span> 8. Evidence Verification System</h2>
+<div class="card">
+  <p>After AI prediction, the system cross-verifies the claim using 3 APIs simultaneously:</p>
+  <table class="file-table">
+    <tr><th>API</th><th>Purpose</th><th>Limit</th></tr>
+    <tr><td><strong>SerpAPI</strong> (Google)</td><td>Google search for the claim</td><td>100 searches/month (free)</td></tr>
+    <tr><td><strong>NewsAPI</strong></td><td>Search recent news articles</td><td>100 requests/day (free)</td></tr>
+    <tr><td><strong>GDELT</strong></td><td>Global news article database</td><td>Unlimited (free, no key needed)</td></tr>
+  </table>
+  <h4>Verification Logic</h4>
+  <ul>
+    <li><strong>Official Info</strong> (chairman, principal claims) → checks ONLY official .edu.in/.ac.in websites</li>
+    <li><strong>College Events</strong> (fest, seminar) → checks ALL sources</li>
+    <li><strong>General News</strong> → checks ALL sources, prioritizes trusted outlets (NDTV, TheHindu, BBC, Reuters, etc.)</li>
+  </ul>
+  <h4>Final Verdicts</h4>
+  <p><strong>CONFIRMED</strong> = found on trusted/official sources → REAL NEWS<br>
+     <strong>CONTRADICTED</strong> = claim details don't match any source → FAKE NEWS<br>
+     <strong>UNVERIFIED</strong> = not enough evidence found → relies on AI prediction<br>
+     <strong>PARTIALLY-CONFIRMED</strong> = some details match, some don't</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<h2><span class="section-icon">🔗</span> 9. URL Routing &amp; User Flow</h2>
+<div class="card">
+  <table class="file-table">
+    <tr><th>URL Path</th><th>View Function</th><th>Description</th></tr>
+    <tr><td><code>/</code></td><td>index()</td><td>Redirects to dashboard (if logged in) or register</td></tr>
+    <tr><td><code>/register/</code></td><td>Register()</td><td>Shows registration form</td></tr>
+    <tr><td><code>/register/action/</code></td><td>RegisterAction()</td><td>Processes registration POST</td></tr>
+    <tr><td><code>/login/</code></td><td>UserLogin()</td><td>Shows login form</td></tr>
+    <tr><td><code>/login/action/</code></td><td>UserLoginAction()</td><td>Processes login POST</td></tr>
+    <tr><td><code>/logout/</code></td><td>UserLogout()</td><td>Clears session, redirects to home</td></tr>
+    <tr><td><code>/dashboard/</code></td><td>Dashboard()</td><td>Main dashboard with stats &amp; history</td></tr>
+    <tr><td><code>/load-dataset/</code></td><td>LoadDataset()</td><td>View combined dataset stats &amp; preview</td></tr>
+    <tr><td><code>/train-model/</code></td><td>TrainModel()</td><td>Start/monitor model training (background thread)</td></tr>
+    <tr><td><code>/predict/</code></td><td>Predict()</td><td>Prediction input page (3 tabs)</td></tr>
+    <tr><td><code>/predict/text/</code></td><td>PredictTextAction()</td><td>Predict from typed text</td></tr>
+    <tr><td><code>/predict/url/</code></td><td>PredictURLAction()</td><td>Scrape URL and predict</td></tr>
+    <tr><td><code>/predict/file/</code></td><td>PredictFileAction()</td><td>Batch predict from CSV</td></tr>
+    <tr><td><code>/results/</code></td><td>Results()</td><td>Show model performance metrics &amp; charts</td></tr>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<h2><span class="section-icon">🚀</span> 10. Deployment Configuration (Render)</h2>
+<div class="card">
+  <ul>
+    <li><strong>Procfile:</strong> <code>web: gunicorn Genuine.wsgi --workers 1 --threads 1</code> — single worker to stay within free memory limits</li>
+    <li><strong>build.sh:</strong> Installs dependencies, downloads trained model from Google Drive using <code>gdown</code>, runs <code>collectstatic</code> and <code>migrate</code></li>
+    <li><strong>WhiteNoise:</strong> Serves static files directly from Django — no need for Nginx or S3</li>
+    <li><strong>Lazy Loading:</strong> Model is NOT loaded at startup — only loaded when first prediction is requested, preventing OOM crashes</li>
+    <li><strong>Dataset on Render:</strong> The <code>Dataset/</code> folder (~430MB) is too large for Git, so it is NOT deployed. On Render, the "Load Dataset" page shows 420 sample records (built-in fallback). However, the <strong>pre-trained model</strong> (<code>detector.pkl</code>) was trained locally with the full 20,000 balanced records and is downloaded via <code>build.sh</code> — so <strong>predictions work perfectly</strong> with the same accuracy as local</li>
+    <li><strong>Environment Variables:</strong> SECRET_KEY, DEBUG, ALLOWED_HOSTS, CSRF_TRUSTED_ORIGINS, API keys</li>
+  </ul>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<h2><span class="section-icon">▶️</span> 11. How to Run the Project</h2>
+<div class="card">
+  <h4>Option 1: One-Click Windows</h4>
+  <p>Double-click <code>run_windows.bat</code> — installs dependencies, migrates database, starts server at <code>http://127.0.0.1:8000</code></p>
+
+  <h4>Option 2: Manual Steps</h4>
+  <ol>
+    <li><code>pip install -r requirements.txt</code></li>
+    <li><code>python manage.py makemigrations</code></li>
+    <li><code>python manage.py migrate</code></li>
+    <li><code>python manage.py runserver</code></li>
+    <li>Open browser → <code>http://127.0.0.1:8000</code></li>
+  </ol>
+</div>
+
+<div style="text-align:center;margin:3rem 0;color:var(--muted);font-size:0.85rem;">
+  <p><strong>GenuineNews Detection System</strong> — Project Guide</p>
+  <p>Genuine News Prediction Using Optimized MSVM — Final Year Project</p>
+  <p>Generated: March 2026</p>
+</div>
+
+</div>
+</body>
+</html>

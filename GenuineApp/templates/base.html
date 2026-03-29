@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}GenuineNews Predictor{% endblock %}</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --accent: #3b82f6;
+      --accent2: #2563eb;
+      --true: #16a34a;
+      --false: #dc2626;
+      --partial: #d97706;
+      --mislead: #7c3aed;
+      --text: #0f172a;
+      --muted: #475569;
+      --success-bg: #dcfce7;
+      --danger-bg: #fee2e2;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--bg);
+      background-image: 
+        linear-gradient(to right, #e2e8f0 1px, transparent 1px),
+        linear-gradient(to bottom, #e2e8f0 1px, transparent 1px);
+      background-size: 60px 60px;
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    a {
+      color: var(--accent2);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .navbar {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .navbar .brand {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--accent2);
+    }
+
+    .navbar .brand span {
+      color: var(--text);
+    }
+
+    .nav-links a {
+      margin-left: 1.5rem;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .nav-links .btn-nav {
+      background: var(--accent);
+      color: #fff;
+      padding: .35rem .9rem;
+      border-radius: 6px;
+      font-size: .85rem;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .page-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: .3rem;
+    }
+
+    .page-sub {
+      color: var(--muted);
+      font-size: .95rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      padding: 1.8rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .card h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: var(--accent2);
+    }
+
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: .85rem;
+      color: var(--muted);
+      margin-bottom: .4rem;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: .8rem 1rem;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid #d1d5db;
+      border-radius: 0;
+      color: var(--text);
+      font-size: .95rem;
+      outline: none;
+      transition: border .2s;
+    }
+
+    .form-control:focus {
+      border-bottom-color: #111827;
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .btn {
+      padding: .7rem 1.6rem;
+      border-radius: 8px;
+      border: none;
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: .2s;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: #574fd6;
+    }
+
+    .btn-success {
+      background: var(--true);
+      color: #fff;
+    }
+
+    .btn-danger {
+      background: var(--false);
+      color: #fff;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent);
+      color: var(--accent2);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+      padding: .25rem .7rem;
+      border-radius: 20px;
+      font-size: .8rem;
+      font-weight: 600;
+    }
+
+    .badge-true {
+      background: #dcfce7;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+
+    .badge-false {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    .badge-partial {
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fde68a;
+    }
+
+    .badge-mislead {
+      background: #f3e8ff;
+      color: #6b21a8;
+      border: 1px solid #e9d5ff;
+    }
+
+    .alert {
+      padding: 1rem 1.2rem;
+      border-radius: 8px;
+      font-size: .9rem;
+      margin-bottom: 1rem;
+    }
+
+    .alert-error {
+      background: #fee2e2;
+      border: 1px solid #f87171;
+      color: #b91c1c;
+    }
+
+    .alert-success {
+      background: #dcfce7;
+      border: 1px solid #4ade80;
+      color: #166534;
+    }
+
+    .alert-info {
+      background: #e0f2fe;
+      border: 1px solid #60a5fa;
+      color: #0369a1;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+
+    .stat-card {
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.2rem;
+      text-align: center;
+    }
+
+    .stat-card .val {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent2);
+    }
+
+    .stat-card .lbl {
+      font-size: .8rem;
+      color: var(--muted);
+      margin-top: .3rem;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .88rem;
+    }
+
+    th {
+      background: #f1f5f9;
+      padding: .7rem 1rem;
+      text-align: left;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    td {
+      padding: .7rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: #e2e8f0;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: .3rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 4px;
+      transition: width .5s;
+    }
+
+    .tabs {
+      display: flex;
+      gap: .5rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0;
+    }
+
+    .tab-btn {
+      padding: .6rem 1.2rem;
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: .9rem;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: .2s;
+    }
+
+    .tab-btn.active {
+      color: var(--accent2);
+      border-bottom-color: var(--accent2);
+    }
+
+    .tab-pane {
+      display: none;
+    }
+
+    .tab-pane.active {
+      display: block;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--muted);
+      font-size: .8rem;
+      border-top: 1px solid var(--border);
+      margin-top: 3rem;
+    }
+  </style>
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+  <!-- Global background waves/lines -->
+  <svg style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1; opacity:0.6; pointer-events:none;" viewBox="0 0 1000 800" preserveAspectRatio="none">
+    <path d="M-100,300 Q150,500 500,400 T1100,500" stroke="#cbd5e1" stroke-width="1.5" fill="none"/>
+    <path d="M-100,400 Q200,600 600,300 T1100,200" stroke="#cbd5e1" stroke-width="1.5" fill="none"/>
+    <path d="M-100,500 Q300,400 700,500 T1100,600" stroke="#cbd5e1" stroke-width="1.5" fill="none"/>
+  </svg>
+  <nav class="navbar">
+    <div class="brand">Genuine<span>News</span></div>
+    <div class="nav-links">
+      {% if request.session.username %}
+      <a href="/dashboard/">Dashboard</a>
+      <a href="/load-dataset/">Dataset</a>
+      <a href="/train-model/">Train</a>
+      <a href="/predict/">Predict</a>
+      <a href="/results/">Results</a>
+      <a href="/logout/" class="btn-nav">Logout</a>
+      {% else %}
+      <a href="/login/">Login</a>
+      <a href="/register/" class="btn-nav">Register</a>
+      {% endif %}
+    </div>
+  </nav>
+  {% block content %}{% endblock %}
+  <footer>Genuine news Prediction Using Optimized MSVM &mdash; Final Year Project</footer>
+  <script>
+    function switchTab(btn, paneId) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(paneId).classList.add('active');
+    }
+  </script>
+  {% block extra_js %}{% endblock %}
+</body>
+
+</html>

@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}Home{% endblock %}
+{% block extra_css %}
+<style>
+.hero { text-align:center; padding:5rem 2rem 3rem; }
+.hero h1 { font-size:3rem; font-weight:800; margin-bottom:1rem; }
+.hero h1 span { background:linear-gradient(135deg,#6c63ff,#a78bfa); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.hero p { font-size:1.15rem; color:#8892a4; max-width:600px; margin:0 auto 2rem; }
+.hero-btns { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
+.features { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1.5rem; max-width:1000px; margin:3rem auto; padding:0 2rem; }
+.feature-card { background:#ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:1.8rem; text-align:center; box-shadow:0 4px 6px rgba(0,0,0,0.05); }
+.feature-icon { font-size:2.5rem; margin-bottom:1rem; }
+.feature-card h3 { font-size:1rem; margin-bottom:.5rem; }
+.feature-card p { font-size:.85rem; color:#8892a4; }
+.label-demo { display:flex; gap:.8rem; justify-content:center; flex-wrap:wrap; margin:2rem 0; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="hero">
+  <h1>Detect <span>Genuine news</span><br>with AI Power</h1>
+  <p>Our system uses BERT embeddings + Firefly-MSVM to detect genuine news across social media, news articles, and websites — with 4-class prediction.</p>
+  <div class="label-demo">
+    <span class="badge badge-true">✔ TRUE</span>
+    <span class="badge badge-false">✘ FALSE</span>
+    <span class="badge badge-partial">⚠ PARTIALLY TRUE</span>
+    <span class="badge badge-mislead">⚡ MISLEADING</span>
+  </div>
+  <div class="hero-btns">
+    <a href="/register/" class="btn btn-primary">Get Started</a>
+    <a href="/login/" class="btn btn-outline">Login</a>
+  </div>
+</div>
+<div class="features">
+  <div class="feature-card">
+    <div class="feature-icon">🤖</div>
+    <h3>BERT Embeddings</h3>
+    <p>Uses state-of-the-art BERT model to understand social media language, slang, and informal text.</p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">🔥</div>
+    <h3>Firefly-MSVM</h3>
+    <p>Bio-inspired Firefly Algorithm selects the most important features for maximum accuracy.</p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">🌐</div>
+    <h3>URL Scraper</h3>
+    <p>Paste any news URL or social media link and the system automatically fetches and analyses the content.</p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">📊</div>
+    <h3>4-Class Prediction</h3>
+    <p>Not just True/False — detects Partially True and Misleading content for nuanced analysis.</p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">📁</div>
+    <h3>Batch Processing</h3>
+    <p>Upload a CSV file with hundreds of news articles and get instant predictions for all of them.</p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">📈</div>
+    <h3>Performance Metrics</h3>
+    <p>Full accuracy, precision, recall, F1-score and confusion matrix to evaluate model performance.</p>
+  </div>
+</div>
+{% endblock %}

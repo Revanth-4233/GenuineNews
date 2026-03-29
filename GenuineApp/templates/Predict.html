@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}Predict News{% endblock %}
+{% block content %}
+<div class="container" style="max-width:700px;">
+  <div class="page-title">Genuine news Prediction Using Optimized MSVM</div>
+  <div class="page-sub">Choose how you want to input the news — text, URL, or CSV file</div>
+
+  {% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+  {% if not is_trained %}
+    <div class="alert alert-error">Model is not trained yet. <a href="/train-model/">Train the model first →</a></div>
+  {% endif %}
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab(this,'tab-text')">✏️ Type Text</button>
+    <button class="tab-btn" onclick="switchTab(this,'tab-url')">🌐 From URL</button>
+    <button class="tab-btn" onclick="switchTab(this,'tab-file')">📁 Upload CSV</button>
+  </div>
+
+  <div id="tab-text" class="tab-pane active">
+    <div class="card">
+      <h3>Enter News Text</h3>
+      <form method="post" action="/predict/text/">
+        {% csrf_token %}
+        <div class="form-group">
+          <label>News Text / Social Media Post / WhatsApp Message</label>
+          <textarea name="t1" class="form-control" rows="5"
+            placeholder="Paste any news article, tweet, WhatsApp forward, or social media post here..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" {% if not is_trained %}disabled{% endif %}>🔍 Predict</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="tab-url" class="tab-pane">
+    <div class="card">
+      <h3>Predict from URL</h3>
+      <p style="color:#8892a4;font-size:.88rem;margin-bottom:1rem;">
+        Paste a link to any news website. The system will automatically scrape the article text and predict.
+      </p>
+      <form method="post" action="/predict/url/">
+        {% csrf_token %}
+        <div class="form-group">
+          <label>News Article URL</label>
+          <input name="url" class="form-control" type="url"
+            placeholder="https://www.news-website.com/article/...">
+        </div>
+        <button type="submit" class="btn btn-primary" {% if not is_trained %}disabled{% endif %}>🌐 Scrape &amp; Predict</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="tab-file" class="tab-pane">
+    <div class="card">
+      <h3>Batch Prediction — Upload CSV</h3>
+      <p style="color:#8892a4;font-size:.88rem;margin-bottom:1rem;">
+        Upload a CSV file with a column named <code style="background:#e2e8f0;padding:.1rem .3rem;border-radius:3px;">News</code> or <code style="background:#e2e8f0;padding:.1rem .3rem;border-radius:3px;">text</code>.
+        The system will predict each row.
+      </p>
+      <form method="post" action="/predict/file/" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+          <label>CSV File</label>
+          <input name="csvfile" type="file" accept=".csv" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary" {% if not is_trained %}disabled{% endif %}>📁 Upload &amp; Predict</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

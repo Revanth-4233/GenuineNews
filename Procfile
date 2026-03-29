@@ -1,0 +1,1 @@
+web: gunicorn Genuine.wsgi --workers 1 --threads 1 --log-file -

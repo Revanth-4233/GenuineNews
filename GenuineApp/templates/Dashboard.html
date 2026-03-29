@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-title">Welcome👋</div>
+  <div class="page-sub">Genuine News Detection System — BERT + Firefly-MSVM</div>
+
+  <div class="stats-grid">
+    <style>
+      .status-ready { color: #27ae60; }
+      .status-untrained { color: #e74c3c; }
+    </style>
+    <div class="stat-card">
+      <div class="val {% if is_trained %}status-ready{% else %}status-untrained{% endif %}">
+        {% if is_trained %}READY{% else %}UNTRAINED{% endif %}
+      </div>
+      <div class="lbl">Model Status</div>
+    </div>
+    {% if metrics %}
+    <div class="stat-card">
+      <div class="val">{{ metrics.accuracy }}%</div>
+      <div class="lbl">Accuracy</div>
+    </div>
+    <div class="stat-card">
+      <div class="val">{{ metrics.f1 }}%</div>
+      <div class="lbl">F1-Score</div>
+    </div>
+    <div class="stat-card">
+      <div class="val">{{ metrics.precision }}%</div>
+      <div class="lbl">Precision</div>
+    </div>
+    {% endif %}
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-top:1.5rem;">
+    <a href="/load-dataset/" class="card" style="text-align:center;text-decoration:none;cursor:pointer;">
+      <div style="font-size:2rem;margin-bottom:.5rem;">📂</div>
+      <div style="font-weight:600;">Load Dataset</div>
+      <div style="font-size:.8rem;color:#8892a4;margin-top:.3rem;">View combined dataset</div>
+    </a>
+    <a href="/train-model/" class="card" style="text-align:center;text-decoration:none;">
+      <div style="font-size:2rem;margin-bottom:.5rem;">🧠</div>
+      <div style="font-weight:600;">Train Model</div>
+      <div style="font-size:.8rem;color:#8892a4;margin-top:.3rem;">BERT + Firefly-MSVM</div>
+    </a>
+    <a href="/predict/" class="card" style="text-align:center;text-decoration:none;">
+      <div style="font-size:2rem;margin-bottom:.5rem;">🔍</div>
+      <div style="font-weight:600;">Predict News</div>
+      <div style="font-size:.8rem;color:#8892a4;margin-top:.3rem;">Text, URL or CSV</div>
+    </a>
+    <a href="/results/" class="card" style="text-align:center;text-decoration:none;">
+      <div style="font-size:2rem;margin-bottom:.5rem;">📊</div>
+      <div style="font-weight:600;">View Results</div>
+      <div style="font-size:.8rem;color:#8892a4;margin-top:.3rem;">Metrics &amp; charts</div>
+    </a>
+  </div>
+
+  {% if history %}
+  <div class="card" style="margin-top:1.5rem;">
+    <h3>Recent Predictions</h3>
+    <div class="table-wrap">
+      <table>
+        <tr>
+          <th>News Text</th>
+          <th>Prediction</th>
+          <th>Confidence</th>
+          <th>Time</th>
+        </tr>
+        {% for h in history %}
+        <tr>
+          <td style="max-width:350px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ h.news_text|truncatechars:80 }}</td>
+          <td>
+            <span
+              class="badge badge-{% if h.prediction == 'TRUE' %}true{% elif h.prediction == 'FALSE' %}false{% elif h.prediction == 'PARTIALLY TRUE' %}partial{% else %}mislead{% endif %}">
+              {{ h.prediction }}
+            </span>
+          </td>
+          <td>{{ h.confidence }}%</td>
+          <td style="color:#8892a4;font-size:.82rem;">{{ h.predicted_at|date:"d M H:i" }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
