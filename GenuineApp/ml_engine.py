@@ -17,6 +17,7 @@ import os
 import re
 import numpy as np
 import pickle
+import torch  # <-- FORCED IMPORT: Resolves secondary-thread WinError 1114
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -256,9 +257,19 @@ class GenuineNewsDetector:
         self.svm_model        = None
         self.label_encoder    = None
         self.selected_feats   = None
-        self.is_trained       = False
+        self._is_trained      = False
         self.metrics          = {}
         self._check_if_trained()
+
+    @property
+    def is_trained(self):
+        if not self._is_trained:
+            self._check_if_trained()
+        return self._is_trained
+
+    @is_trained.setter
+    def is_trained(self, value):
+        self._is_trained = value
 
     def _path(self, fname):
         return os.path.join(self.MODEL_DIR, fname)
@@ -266,9 +277,17 @@ class GenuineNewsDetector:
     def _check_if_trained(self):
         """Quick check if model exists without loading it into RAM."""
         if os.path.exists(self._path('detector.pkl')):
-            self.is_trained = True
-            # We don't load the full state here to save memory on Render
-            # It will be lazy-loaded when predict_one() is called
+            self._is_trained = True
+            # Try to load metrics from metrics.json to avoid loading the whole pickle
+            metrics_path = self._path('metrics.json')
+            if os.path.exists(metrics_path):
+                try:
+                    import json
+                    with open(metrics_path, 'r') as f:
+                        self.metrics = json.load(f)
+                    print("[GenuineNewsDetector] Loaded metrics from metrics.json successfully.")
+                except Exception as e:
+                    print(f"[GenuineNewsDetector] Failed to load metrics.json: {e}")
             return True
         return False
 
@@ -315,6 +334,35 @@ class GenuineNewsDetector:
         }
         with open(self._path('detector.pkl'), 'wb') as f:
             pickle.dump(state, f)
+
+        # Save metrics to metrics.json
+        try:
+            import json
+            import numpy as np
+            def to_serializable(obj):
+                if isinstance(obj, dict):
+                    return {to_serializable(k): to_serializable(v) for k, v in obj.items()}
+                elif isinstance(obj, list):
+                    return [to_serializable(x) for x in obj]
+                elif isinstance(obj, tuple):
+                    return tuple(to_serializable(x) for x in obj)
+                elif isinstance(obj, (np.integer, np.int64, np.int32, np.int16, np.int8)):
+                    return int(obj)
+                elif isinstance(obj, (np.floating, np.float64, np.float32, np.float16)):
+                    return float(obj)
+                elif isinstance(obj, np.ndarray):
+                    return to_serializable(obj.tolist())
+                elif hasattr(np, 'str_') and isinstance(obj, np.str_):
+                    return str(obj)
+                else:
+                    return obj
+            
+            clean_metrics = to_serializable(self.metrics)
+            with open(self._path('metrics.json'), 'w') as json_file:
+                json.dump(clean_metrics, json_file, indent=4)
+            print("[GenuineNewsDetector] Saved metrics to metrics.json successfully.")
+        except Exception as e:
+            print(f"[GenuineNewsDetector] Failed to save metrics.json: {e}")
 
     def train(self, texts, raw_labels, progress_cb=None):
         """Train the full pipeline with improved parameters."""

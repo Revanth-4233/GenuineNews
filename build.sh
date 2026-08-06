@@ -14,6 +14,9 @@ python -c "import nltk; nltk.download('stopwords', quiet=True); nltk.download('w
 mkdir -p model
 gdown "1oB9z6oEUfV7PCXxCQmZ4bHk3TQ7-lvLq" -O model/detector.pkl
 
+# Extract metrics to JSON to prevent web server OOM crashes
+python extract_metrics.py
+
 # Collect static files
 python manage.py collectstatic --no-input
 

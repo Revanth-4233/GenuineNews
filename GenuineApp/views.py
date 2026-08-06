@@ -651,7 +651,8 @@ def Dashboard(request):
     if 'username' not in request.session:
         return redirect('login')
     detector = get_detector()
-    detector._lazy_load()
+    if not detector.metrics:
+        detector._lazy_load()
     history  = PredictionHistory.objects.filter(
         username=request.session['username']).order_by('-predicted_at')[:10]
     return render(request, 'Dashboard.html', {
@@ -923,7 +924,8 @@ def Results(request):
     if 'username' not in request.session:
         return redirect('login')
     detector = get_detector()
-    detector._lazy_load()
+    if not detector.metrics:
+        detector._lazy_load()
     if not detector.is_trained or not detector.metrics:
         return redirect('train_model')
     metrics = detector.metrics

@@ -61,7 +61,7 @@ def load_csv_dataset(path):
         try:
             df = pd.read_csv(path, encoding='latin-1', on_bad_lines='skip')
         except Exception as e:
-            print(f"  ❌ Cannot read {fname}: {e}")
+            print(f"  [ERROR] Cannot read {fname}: {e}")
             return pd.DataFrame(columns=['News', 'target', 'source'])
 
     df.columns = [c.strip().lower() for c in df.columns]
@@ -73,7 +73,7 @@ def load_csv_dataset(path):
         df = df.dropna()
         df['target'] = df['target'].apply(_map_label)
         df['source'] = fname
-        print(f"  ✅ {fname}: {len(df)} rows | {df['target'].value_counts().to_dict()}")
+        print(f"  [OK] {fname}: {len(df)} rows | {df['target'].value_counts().to_dict()}")
         return df
 
     # Case 2: text + label (indian_news_dataset)
@@ -82,48 +82,48 @@ def load_csv_dataset(path):
         df = df.dropna()
         df['target'] = df['target'].apply(_map_label)
         df['source'] = fname
-        print(f"  ✅ {fname}: {len(df)} rows | {df['target'].value_counts().to_dict()}")
+        print(f"  [OK] {fname}: {len(df)} rows | {df['target'].value_counts().to_dict()}")
         return df
 
     # Case 3: title + text (Fake1/True1) — no label column
     if 'title' in cols and 'text' in cols:
         file_label = _label_from_filename(fname)
         if not file_label:
-            print(f"  ⚠️ {fname}: Cannot determine label — skipping")
+            print(f"  [WARNING] {fname}: Cannot determine label - skipping")
             return pd.DataFrame(columns=['News', 'target', 'source'])
         df = df[['text']].rename(columns={'text': 'News'})
         df['target'] = file_label
         df = df.dropna()
         df = df[df['News'].str.len() > 20]
         df['source'] = fname
-        print(f"  ✅ {fname}: {len(df)} rows | label={file_label}")
+        print(f"  [OK] {fname}: {len(df)} rows | label={file_label}")
         return df
 
     # Case 4: title only (Fake/True)
     if 'title' in cols and 'text' not in cols and 'label' not in cols:
         file_label = _label_from_filename(fname)
         if not file_label:
-            print(f"  ⚠️ {fname}: Cannot determine label — skipping")
+            print(f"  [WARNING] {fname}: Cannot determine label - skipping")
             return pd.DataFrame(columns=['News', 'target', 'source'])
         df = df[['title']].rename(columns={'title': 'News'})
         df['target'] = file_label
         df = df.dropna()
         df['source'] = fname
-        print(f"  ✅ {fname}: {len(df)} rows | label={file_label}")
+        print(f"  [OK] {fname}: {len(df)} rows | label={file_label}")
         return df
 
     # Case 5: text only (DataSet_Misinfo / Russian)
     if 'text' in cols and 'label' not in cols and 'target' not in cols:
         file_label = _label_from_filename(fname)
         if not file_label:
-            print(f"  ⚠️ {fname}: Cannot determine label — skipping")
+            print(f"  [WARNING] {fname}: Cannot determine label - skipping")
             return pd.DataFrame(columns=['News', 'target', 'source'])
         df = df[['text']].rename(columns={'text': 'News'})
         df['target'] = file_label
         df = df.dropna()
         df = df[df['News'].str.len() > 20]
         df['source'] = fname
-        print(f"  ✅ {fname}: {len(df)} rows | label={file_label}")
+        print(f"  [OK] {fname}: {len(df)} rows | label={file_label}")
         return df
 
     # Case 6: Generic fallback
@@ -142,10 +142,10 @@ def load_csv_dataset(path):
         df = df.dropna()
         df['target'] = df['target'].apply(_map_label)
         df['source'] = fname
-        print(f"  ✅ {fname}: {len(df)} rows | {df['target'].value_counts().to_dict()}")
+        print(f"  [OK] {fname}: {len(df)} rows | {df['target'].value_counts().to_dict()}")
         return df
 
-    print(f"  ❌ {fname}: Unrecognized format | columns: {cols}")
+    print(f"  [ERROR] {fname}: Unrecognized format | columns: {cols}")
     return pd.DataFrame(columns=['News', 'target', 'source'])
 
 
@@ -160,7 +160,7 @@ def load_combined_dataset():
     print(f"\n[DataLoader] Found {len(csv_files)} CSV files\n")
 
     for fname in csv_files:
-        print(f"[DataLoader] → {fname}")
+        print(f"[DataLoader] -> {fname}")
         df = load_csv_dataset(os.path.join(DATASET_DIR, fname))
         if len(df) > 0:
             frames.append(df)
@@ -200,12 +200,12 @@ def load_combined_dataset():
             sampled = repeated.sample(n=target_size, random_state=42)
 
         balanced_frames.append(sampled)
-        print(f"  {label}: {available} available → using {target_size}")
+        print(f"  {label}: {available} available -> using {target_size}")
 
     balanced = pd.concat(balanced_frames, ignore_index=True).sample(
         frac=1, random_state=42).reset_index(drop=True)
 
-    print(f"\n[DataLoader] ✅ Final balanced: {len(balanced)} rows")
+    print(f"\n[DataLoader] [OK] Final balanced: {len(balanced)} rows")
     print(balanced['target'].value_counts().to_dict())
     return balanced
 
